@@ -190,6 +190,30 @@ const PropertyDetails = () => {
                                     alt={property.title}
                                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                 />
+                                {isOwner && property.images && property.images.length > 0 && (
+                                    <button
+                                        onClick={async (e) => {
+                                            e.stopPropagation();
+                                            if (window.confirm('Delete this image?')) {
+                                                try {
+                                                    const imgId = property.images[activeImageIndex]._id;
+                                                    await api.delete(`/properties/${id}/images/${imgId}`);
+                                                    // Refresh
+                                                    const res = await api.get(`/properties/${id}`);
+                                                    setProperty(res.data);
+                                                    setActiveImageIndex(0);
+                                                } catch (err) {
+                                                    console.error(err);
+                                                    alert('Failed to delete image');
+                                                }
+                                            }
+                                        }}
+                                        className="absolute top-4 right-4 bg-red-500/80 hover:bg-red-500 text-white p-2 rounded-full backdrop-blur-sm transition-all z-20"
+                                        title="Delete Image"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
+                                )}
                                 <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md px-4 py-1.5 rounded-full text-white text-sm font-medium border border-white/10">
                                     {property.type === 'sale' ? 'For Sale' : 'For Rent'}
                                 </div>

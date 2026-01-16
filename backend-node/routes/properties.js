@@ -172,6 +172,30 @@ router.post('/:id/images', auth, async (req, res) => {
     }
 });
 
+// DELETE /:id/images/:imageId - Delete image
+router.delete('/:id/images/:imageId', auth, async (req, res) => {
+    try {
+        const property = await Property.findById(req.params.id);
+        if (!property) return res.status(404).send({ detail: 'Property not found' });
+
+        if (req.user.role !== 'admin' && property.agent_id.toString() !== req.user._id.toString()) {
+            return res.status(403).send({ detail: 'Not authorized to delete images' });
+        }
+
+        // Find the image subdocument
+        const image = property.images.id(req.params.imageId);
+        if (!image) return res.status(404).send({ detail: 'Image not found' });
+
+        // Remove it using pull
+        property.images.pull(req.params.imageId);
+        await property.save();
+
+        res.send(property);
+    } catch (e) {
+        res.status(400).send({ detail: e.message });
+    }
+});
+
 // POST /:id/buy - Buy Property
 router.post('/:id/buy', auth, async (req, res) => {
     try {
