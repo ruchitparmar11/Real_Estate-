@@ -46,6 +46,12 @@ const Navbar = () => {
                             <Link to="/profile" className={`${navLinkClass} ${hoverEffect}`}>
                                 Profile
                             </Link>
+
+                            {(localStorage.getItem('role') === 'admin' || localStorage.getItem('role') === 'seller' || localStorage.getItem('role') === 'agent') && (
+                                <Link to="/analytics" className={`${navLinkClass} ${hoverEffect}`}>
+                                    Analytics
+                                </Link>
+                            )}
                             <button
                                 onClick={() => {
                                     localStorage.removeItem('token');
