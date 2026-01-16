@@ -26,6 +26,17 @@ const seedData = async () => {
         });
         await agent.save();
 
+        // Create Admin
+        const admin = new User({
+            email: 'admin@estateai.com',
+            password_hash: passwordHash,
+            name: 'System Admin',
+            role: 'admin',
+            phone: '000-000-0000',
+            isVerified: true
+        });
+        await admin.save();
+
         // Create Properties
         const properties = [
             {
