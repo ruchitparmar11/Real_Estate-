@@ -14,7 +14,7 @@ const MyListings = () => {
             try {
                 // 1. Get User ID
                 const userResponse = await api.get('/auth/me');
-                const userId = userResponse.data.id;
+                const userId = userResponse.data._id || userResponse.data.id;
 
                 // 2. Fetch properties for this agent
                 const response = await api.get(`/properties/?agent_id=${userId}`);

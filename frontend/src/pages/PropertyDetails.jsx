@@ -27,7 +27,7 @@ const PropertyDetails = () => {
                 if (token) {
                     try {
                         const meResponse = await api.get('/auth/me');
-                        setUserId(meResponse.data.id);
+                        setUserId(meResponse.data._id || meResponse.data.id);
                     } catch (e) {
                         // Token invalid or expired
                     }
