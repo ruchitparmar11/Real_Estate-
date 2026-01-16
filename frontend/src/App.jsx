@@ -12,6 +12,7 @@ import RoleSelection from './pages/RoleSelection';
 import Inquiries from './pages/Inquiries';
 import Analytics from './pages/Analytics';
 import Applications from './pages/Applications';
+import SellerProfile from './pages/SellerProfile';
 
 import PropertyDetails from './pages/PropertyDetails';
 import Payment from './pages/Payment';
@@ -33,6 +34,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/seller/:id" element={<SellerProfile />} />
             <Route path="/my-purchases" element={<MyPurchases />} />
             <Route path="/add-property" element={<AddProperty />} />
             <Route path="/edit-property/:id" element={<AddProperty />} />

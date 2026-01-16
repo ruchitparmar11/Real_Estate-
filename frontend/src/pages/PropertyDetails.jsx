@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { MapPin, DollarSign, Home, Check, User, Calendar, MessageSquare, Heart, ArrowLeft, Share2, Printer, Edit, Trash2, Plus, BadgeCheck } from 'lucide-react';
 
 const PropertyDetails = () => {
@@ -321,12 +321,12 @@ const PropertyDetails = () => {
                                 </div>
                             ) : (
                                 <div className="glass-panel p-8 rounded-3xl">
-                                    <div className="flex items-center gap-4 mb-6">
-                                        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white text-xl font-bold shadow-lg">
+                                    <Link to={`/seller/${property.agent_id?._id}`} className="flex items-center gap-4 mb-6 group cursor-pointer hover:bg-white/5 p-2 rounded-xl transition-colors -mx-2">
+                                        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white text-xl font-bold shadow-lg group-hover:scale-105 transition-transform">
                                             <User size={24} />
                                         </div>
                                         <div>
-                                            <div className="font-bold text-lg flex items-center gap-1">
+                                            <div className="font-bold text-lg flex items-center gap-1 group-hover:text-primary transition-colors">
                                                 {property.agent_id?.name || 'Listing Agent'}
                                                 {property.agent_id?.isVerified && <BadgeCheck size={18} className="text-blue-500 fill-blue-500/10" />}
                                             </div>
@@ -337,7 +337,7 @@ const PropertyDetails = () => {
                                                 </div>
                                             )}
                                         </div>
-                                    </div>
+                                    </Link>
 
                                     {canInquire ? (
                                         <form onSubmit={handleInquiry} className="space-y-4">

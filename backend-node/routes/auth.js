@@ -142,6 +142,22 @@ router.post('/request-verification', auth, async (req, res) => {
     }
 });
 
+// Get Public User Profile
+router.get('/user/:id', async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) return res.status(404).send({ detail: 'User not found' });
+
+        const userObj = user.toObject();
+        delete userObj.password_hash;
+        // Optionally omit sensitive info even further if needed, but email/phone is often needed for contact
+
+        res.send(userObj);
+    } catch (e) {
+        res.status(400).send({ detail: 'Invalid User ID' });
+    }
+});
+
 // Admin Verify User (Protected in real app, simplified here)
 router.post('/admin/verify-user', auth, async (req, res) => {
     try {
