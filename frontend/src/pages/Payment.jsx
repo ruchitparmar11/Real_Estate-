@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../services/api';
 import { CreditCard, Lock, Calendar, CheckCircle } from 'lucide-react';
 
 const Payment = () => {
@@ -20,7 +20,7 @@ const Payment = () => {
     useEffect(() => {
         const fetchProperty = async () => {
             try {
-                const response = await axios.get(`http://localhost:8000/properties/${id}`);
+                const response = await api.get(`/properties/${id}`);
                 setProperty(response.data);
             } catch (err) {
                 console.error(err);
@@ -41,9 +41,7 @@ const Payment = () => {
         setTimeout(async () => {
             try {
                 const token = localStorage.getItem('token');
-                await axios.post(`http://localhost:8000/properties/${id}/buy`, {}, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                await api.post(`/properties/${id}/buy`);
                 setPaymentSuccess(true);
             } catch (err) {
                 alert(err.response?.data?.detail || 'Payment failed. Please try again.');

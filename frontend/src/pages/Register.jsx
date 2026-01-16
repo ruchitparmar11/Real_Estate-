@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import { useNavigate, Link } from 'react-router-dom';
 import { User, Mail, Lock, Shield, ArrowRight } from 'lucide-react';
 import { GoogleLogin } from '@react-oauth/google';
@@ -24,7 +24,7 @@ const Register = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await axios.post('http://localhost:8000/auth/google', {
+            const response = await api.post('/auth/google', {
                 token: credentialResponse.credential,
                 role: formData.role
             });
@@ -58,7 +58,7 @@ const Register = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await axios.post('http://localhost:8000/auth/register', formData);
+            const response = await api.post('/auth/register', formData);
             localStorage.setItem('token', response.data.access_token);
             localStorage.setItem('role', response.data.user.role);
             navigate('/');

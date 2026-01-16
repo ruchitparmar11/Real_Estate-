@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Lock, ArrowRight, User } from 'lucide-react';
 import { GoogleLogin } from '@react-oauth/google';
@@ -19,7 +19,7 @@ const Login = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await axios.post('http://localhost:8000/auth/google', {
+            const response = await api.post('/auth/google', {
                 token: credentialResponse.credential
             });
             localStorage.setItem('token', response.data.access_token);
@@ -49,7 +49,7 @@ const Login = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await axios.post('http://localhost:8000/auth/login', {
+            const response = await api.post('/auth/login', {
                 username: formData.username,
                 password: formData.password
             });

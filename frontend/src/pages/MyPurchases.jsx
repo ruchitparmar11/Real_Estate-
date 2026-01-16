@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import { MapPin, CheckCircle } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -18,9 +18,7 @@ const MyPurchases = () => {
                     navigate('/login');
                     return;
                 }
-                const response = await axios.get('http://localhost:8000/properties/purchased', {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                const response = await api.get('/properties/purchased');
                 setProperties(response.data);
                 setLoading(false);
             } catch (err) {
