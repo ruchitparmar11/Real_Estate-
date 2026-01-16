@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import { useNavigate } from 'react-router-dom';
-import { Edit, Trash2, MapPin, DollarSign, Plus } from 'lucide-react';
+import { Edit, Trash2, MapPin, DollarSign, Plus, Eye } from 'lucide-react';
 
 const MyListings = () => {
     const [properties, setProperties] = useState([]);
@@ -91,6 +91,13 @@ const MyListings = () => {
                                 </div>
 
                                 <div style={{ display: 'flex', gap: '1rem', borderTop: '1px solid var(--border)', paddingTop: '1rem' }}>
+                                    <button
+                                        onClick={() => navigate(`/properties/${property.id}`)}
+                                        className="btn btn-outline"
+                                        style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', borderColor: 'var(--primary)', color: 'var(--primary)' }}
+                                    >
+                                        <Eye size={16} /> View
+                                    </button>
                                     <button
                                         onClick={() => navigate(`/edit-property/${property.id}`)}
                                         className="btn btn-outline"

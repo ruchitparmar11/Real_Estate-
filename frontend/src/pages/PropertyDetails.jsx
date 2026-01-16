@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { MapPin, DollarSign, Home, Check, User, Calendar, MessageSquare, Heart, ArrowLeft, Share2, Printer, Edit, Trash2, Plus, BadgeCheck } from 'lucide-react';
+import { MapPin, DollarSign, Home, Check, User, Calendar, MessageSquare, Heart, ArrowLeft, Share2, Printer, Edit, Trash2, Plus, BadgeCheck, Upload } from 'lucide-react';
 
 const PropertyDetails = () => {
     const { id } = useParams();
@@ -76,6 +76,35 @@ const PropertyDetails = () => {
             wishlist.push(propId);
             localStorage.setItem('wishlist', JSON.stringify(wishlist));
             alert('Added to wishlist');
+        }
+    };
+
+    const handleFileUpload = async (file) => {
+        setAddingImage(true);
+        try {
+            const uploadData = new FormData();
+            uploadData.append('image', file);
+
+            const uploadRes = await api.post('/properties/upload', uploadData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+
+            const uploadedUrl = uploadRes.data.url;
+
+            // Immediately add to property
+            await api.post(`/properties/${id}/images`, {
+                image_url: uploadedUrl
+            });
+
+            const res = await api.get(`/properties/${id}`);
+            setProperty(res.data);
+            alert('Image uploaded successfully!');
+        } catch (err) {
+            console.error(err);
+            alert('Failed to upload image');
+        } finally {
+            setAddingImage(false);
+            setNewImageUrl('');
         }
     };
 
@@ -300,22 +329,69 @@ const PropertyDetails = () => {
 
                                     <div className="border-t border-white/10 pt-6">
                                         <h4 className="font-medium mb-3 flex items-center gap-2"><Plus size={16} /> Add Photo</h4>
-                                        <form onSubmit={handleAddImage} className="relative">
-                                            <input
-                                                type="url"
-                                                placeholder="Image URL..."
-                                                value={newImageUrl}
-                                                onChange={(e) => setNewImageUrl(e.target.value)}
-                                                className="w-full bg-dark/50 border border-white/10 rounded-xl py-3 pl-4 pr-12 text-sm focus:border-primary/50 outline-none transition"
-                                                required
-                                            />
-                                            <button
-                                                type="submit"
-                                                disabled={addingImage}
-                                                className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-primary rounded-lg text-white hover:bg-primary-hover disabled:opacity-50"
-                                            >
-                                                <Plus size={16} />
-                                            </button>
+                                        <form onSubmit={handleAddImage} className="space-y-3">
+                                            {/* File Upload Option */}
+                                            <div className="relative">
+                                                <input
+                                                    type="file"
+                                                    id="sidebar-upload"
+                                                    accept="image/*"
+                                                    className="hidden"
+                                                    onChange={(e) => {
+                                                        const file = e.target.files[0];
+                                                        if (file) {
+                                                            // Handle immediate upload or set state?
+                                                            // We'll set a temp state to show name, then upload on submit
+                                                            // Or better, upload immediately? No, let's stick to submit.
+                                                            // Actually, let's keep it simple: URL input OR File Select
+                                                            // We'll put the file object in state if selected.
+                                                            const preview = URL.createObjectURL(file);
+                                                            setNewImageUrl(preview); // Preview
+                                                            // We need a way to store the file to upload
+                                                            // Let's add a hidden prop or use a ref, or just add logic to handleAddImage
+                                                            // Since we don't have a 'file' state variable in the main component effectively (we have addingImage state)
+                                                            // We will need to add a state for 'file' to PropertyDetails component
+                                                            // BUT: modifying component state structure requires 'replace_file' of the exact state line.
+                                                            // To avoid complex edits, let's just do:
+                                                            // "Click to upload" -> Uploads immediately -> gets URL -> calls addImage
+                                                            handleFileUpload(file);
+                                                        }
+                                                    }}
+                                                />
+                                                <label
+                                                    htmlFor="sidebar-upload"
+                                                    className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border border-dashed border-white/20 hover:border-primary/50 hover:bg-white/5 cursor-pointer transition-all text-text-muted hover:text-white text-sm"
+                                                >
+                                                    <Upload size={16} /> Upload from Device
+                                                </label>
+                                            </div>
+
+                                            <div className="relative">
+                                                <div className="absolute inset-0 flex items-center">
+                                                    <div className="w-full border-t border-white/10"></div>
+                                                </div>
+                                                <div className="relative flex justify-center text-xs uppercase">
+                                                    <span className="bg-card px-2 text-text-muted">Or via URL</span>
+                                                </div>
+                                            </div>
+
+                                            <div className="relative">
+                                                <input
+                                                    type="url"
+                                                    placeholder="Paste Image URL..."
+                                                    value={newImageUrl.startsWith('blob:') ? '' : newImageUrl} // Don't show blob
+                                                    onChange={(e) => setNewImageUrl(e.target.value)}
+                                                    className="w-full bg-dark/50 border border-white/10 rounded-xl py-3 pl-4 pr-12 text-sm focus:border-primary/50 outline-none transition"
+                                                    required={!newImageUrl.startsWith('blob:')}
+                                                />
+                                                <button
+                                                    type="submit"
+                                                    disabled={addingImage}
+                                                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-primary rounded-lg text-white hover:bg-primary-hover disabled:opacity-50"
+                                                >
+                                                    <Plus size={16} />
+                                                </button>
+                                            </div>
                                         </form>
                                     </div>
                                 </div>
