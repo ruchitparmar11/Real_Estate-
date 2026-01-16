@@ -127,6 +127,7 @@ const SellerProfile = () => {
                                                 <img
                                                     src={property.images[0].image_url}
                                                     alt={property.title}
+                                                    onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1600596542815-2a440436f2e0?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"; }}
                                                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                                                 />
                                             ) : (

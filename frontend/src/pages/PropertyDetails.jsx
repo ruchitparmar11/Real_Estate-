@@ -188,6 +188,7 @@ const PropertyDetails = () => {
                                 <img
                                     src={images[activeImageIndex]}
                                     alt={property.title}
+                                    onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1600596542815-2a440436f2e0?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"; }}
                                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                 />
                                 {isOwner && property.images && property.images.length > 0 && (
@@ -228,7 +229,12 @@ const PropertyDetails = () => {
                                             onClick={() => setActiveImageIndex(idx)}
                                             className={`relative min-w-[100px] h-24 rounded-xl overflow-hidden border-2 transition-all ${activeImageIndex === idx ? 'border-primary shadow-glow' : 'border-transparent opacity-70 hover:opacity-100'}`}
                                         >
-                                            <img src={img} alt="" className="w-full h-full object-cover" />
+                                            <img
+                                                src={img}
+                                                alt=""
+                                                onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1600596542815-2a440436f2e0?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"; }}
+                                                className="w-full h-full object-cover"
+                                            />
                                         </button>
                                     ))}
                                 </div>
