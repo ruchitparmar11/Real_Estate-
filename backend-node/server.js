@@ -10,7 +10,8 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use('/uploads', express.static('uploads'));
+const path = require('path');
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Database
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/realestate';
