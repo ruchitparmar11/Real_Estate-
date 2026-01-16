@@ -344,7 +344,6 @@ const AddProperty = () => {
                                         type="file"
                                         id="cameraInput"
                                         accept="image/*"
-                                        capture="environment" // This triggers the rear camera on mobile
                                         className="hidden"
                                         onChange={handleFileChange}
                                     />
