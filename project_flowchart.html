@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Flowcharts - EstateAI</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose'
+        });
+    </script>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            background: #f4f4f9;
+            color: #333;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            color: #444;
+        }
+
+        .mermaid {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>EstateAI - Project Architecture & Flow</h1>
+
+    <div class="chart-container">
+        <h2>1. High-Level Technical Data Flow</h2>
+        <p>This diagram shows how the React Frontend, FastAPI Backend, and Database interact.</p>
+        <div class="mermaid">
+            graph LR
+            User((User))
+
+            subgraph Frontend [React Frontend]
+            UI[UI Pages]
+            State[State Manager]
+            Axios[Axios Client]
+            end
+
+            subgraph Backend [FastAPI Backend]
+            API[API Protocol]
+            Auth[Auth Logic]
+            DB_Link[SQLModel ORM]
+            end
+
+            subgraph Data [Data Storage]
+            Database[(Real Estate DB)]
+            end
+
+            User -->|Clicks| UI
+            UI -->|Action| State
+            State -->|Request| Axios
+            Axios -->|JSON| API
+            API -->|Check| Auth
+            API -->|Query| DB_Link
+            DB_Link <-->|Read/Write| Database
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <h2>2. Google Login & Role Selection Logic</h2>
+        <p>The specific flow for handling new vs. existing users via Google Auth.</p>
+        <div class="mermaid">
+            sequenceDiagram
+            actor User
+            participant FE as Frontend
+            participant BE as Backend
+            participant DB as Database
+
+            User->>FE: Sign in with Google
+            FE->>BE: Send Google Token
+            BE->>BE: Verify Token
+
+            alt New User
+            BE->>DB: Check Email (Not Found)
+            BE->>DB: Associate 'VISITOR' Role
+            BE-->>FE: Return Token + Role 'VISITOR'
+            FE->>User: Redirect to Role Selection Page
+            User->>FE: Select Role (Buyer/Seller)
+            FE->>BE: Update Role Request
+            BE->>DB: Save New Role
+            FE->>User: Redirect Home
+            else Existing User
+            BE->>DB: Check Email (Found)
+            BE-->>FE: Return Token + Existing Role
+            FE->>User: Redirect Home
+            end
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <h2>3. User Journey & Features</h2>
+        <p>How different user roles interact with the application.</p>
+        <div class="mermaid">
+            graph TD
+            Start[Visitor Lands on Site] --> Auth{Logged In?}
+
+            Auth -- No --> Browse[Browse Properties]
+            Browse --> ViewDetails[View Details]
+            ViewDetails --> LoginPrompt[Login to Purchase/Inquire]
+
+            Auth -- Yes --> CheckRole{Check Role}
+
+            CheckRole -- Buyer --> BuyerFeatures[Buyer Dashboard]
+            BuyerFeatures --> Wishlist
+            BuyerFeatures --> MakeInquiry[Contact Agent]
+            BuyerFeatures --> BookVisit[Book Visit]
+
+            CheckRole -- Seller/Agent --> VendorFeatures[Vendor Dashboard]
+            VendorFeatures --> AddProp[Add New Property]
+            VendorFeatures --> Analytics[View Analytics]
+            VendorFeatures --> ManageListings[Manage Listings]
+
+            CheckRole -- Admin --> AdminFeatures[Admin Panel]
+            AdminFeatures --> UserMgmt[Manage Users]
+        </div>
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,42 @@
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const dotenv = require('dotenv');
+
+dotenv.config();
+
+const app = express();
+
+// Middleware
+app.use(cors({
+    origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+    credentials: true
+}));
+app.use(express.json());
+app.use('/uploads', express.static('uploads'));
+
+// Database
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/realestate';
+mongoose.connect(MONGO_URI)
+    .then(() => console.log('MongoDB Connected'))
+    .catch(err => {
+        console.error('MongoDB Connection Error:', err);
+        console.log('Please ensure MongoDB is running.');
+    });
+
+// Routes
+app.use('/auth', require('./routes/auth'));
+app.use('/properties', require('./routes/properties'));
+app.use('/inquiries', require('./routes/inquiries'));
+app.use('/bookings', require('./routes/bookings'));
+app.use('/analytics', require('./routes/analytics'));
+app.use('/reviews', require('./routes/reviews'));
+
+app.get('/', (req, res) => {
+    res.json({ message: 'Welcome to Real Estate API (Node.js)' });
+});
+
+const PORT = process.env.PORT || 8000;
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
