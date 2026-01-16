@@ -45,7 +45,7 @@ const Analytics = () => {
                     <div style={{ color: '#22c55e', fontSize: '0.875rem' }}>Lifetime views</div>
                 </div>
 
-                {stats.total_fees !== undefined && (
+                {stats.total_fees !== undefined && stats.total_fees > 0 && (
                     <div className="card">
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
                             <span style={{ color: 'var(--text-muted)' }}>Platform Revenue</span>
@@ -109,9 +109,9 @@ const Analytics = () => {
                                             <td className="p-4 text-text-muted">{user.email}</td>
                                             <td className="p-4">
                                                 <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${user.role === 'admin' ? 'bg-red-500/20 text-red-400' :
-                                                        user.role === 'seller' ? 'bg-blue-500/20 text-blue-400' :
-                                                            user.role === 'agent' ? 'bg-purple-500/20 text-purple-400' :
-                                                                'bg-green-500/20 text-green-400'
+                                                    user.role === 'seller' ? 'bg-blue-500/20 text-blue-400' :
+                                                        user.role === 'agent' ? 'bg-purple-500/20 text-purple-400' :
+                                                            'bg-green-500/20 text-green-400'
                                                     }`}>
                                                     {user.role}
                                                 </span>
