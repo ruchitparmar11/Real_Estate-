@@ -271,18 +271,22 @@ const PropertyDetails = () => {
                                     const bedsMatch = features.match(/(\d+)\s*Beds?/i);
                                     const bathsMatch = features.match(/(\d+)\s*Baths?/i);
 
+                                    const area = property.area || (sqftMatch ? sqftMatch[1] : '--');
+                                    const beds = property.bedrooms || (bedsMatch ? bedsMatch[1] : '--');
+                                    const baths = property.bathrooms || (bathsMatch ? bathsMatch[1] : '--');
+
                                     return (
                                         <>
                                             <div className="bg-white/5 rounded-2xl p-4 text-center border border-white/5">
-                                                <div className="text-2xl font-bold text-white mb-0.5">{sqftMatch ? sqftMatch[1] : '--'}</div>
+                                                <div className="text-2xl font-bold text-white mb-0.5">{area}</div>
                                                 <span className="block text-sm text-text-muted">Sq Ft</span>
                                             </div>
                                             <div className="bg-white/5 rounded-2xl p-4 text-center border border-white/5">
-                                                <div className="text-2xl font-bold text-white mb-0.5">{bedsMatch ? bedsMatch[1] : '--'}</div>
+                                                <div className="text-2xl font-bold text-white mb-0.5">{beds}</div>
                                                 <span className="block text-sm text-text-muted">Beds</span>
                                             </div>
                                             <div className="bg-white/5 rounded-2xl p-4 text-center border border-white/5">
-                                                <div className="text-2xl font-bold text-white mb-0.5">{bathsMatch ? bathsMatch[1] : '--'}</div>
+                                                <div className="text-2xl font-bold text-white mb-0.5">{baths}</div>
                                                 <span className="block text-sm text-text-muted">Baths</span>
                                             </div>
                                         </>

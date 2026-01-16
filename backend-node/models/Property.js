@@ -6,6 +6,9 @@ const propertySchema = new mongoose.Schema({
     price: { type: Number, required: true },
     location: { type: String, required: true },
     type: { type: String, required: true }, // sale or rent
+    bedrooms: { type: Number },
+    bathrooms: { type: Number },
+    area: { type: Number }, // Sq Ft
     features: { type: String }, // Comma separated string
     status: {
         type: String,

@@ -16,6 +16,9 @@ const AddProperty = () => {
         price: '',
         location: '',
         type: 'sale',
+        bedrooms: '',
+        bathrooms: '',
+        area: '',
         features: '',
         imageUrl: '',
         file: null // Store the file object
@@ -33,6 +36,9 @@ const AddProperty = () => {
                         price: prop.price,
                         location: prop.location,
                         type: prop.type,
+                        bedrooms: prop.bedrooms || '',
+                        bathrooms: prop.bathrooms || '',
+                        area: prop.area || '',
                         features: prop.features || '',
                         imageUrl: prop.images && prop.images.length > 0 ? prop.images[0].image_url : '',
                         file: null
@@ -231,6 +237,45 @@ const AddProperty = () => {
                                 </div>
                             </div>
                         </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className={inputWrapperClass}>
+                                <label className={labelClass}>Bedrooms</label>
+                                <input
+                                    type="number"
+                                    name="bedrooms"
+                                    value={formData.bedrooms}
+                                    onChange={handleChange}
+                                    placeholder="e.g. 3"
+                                    className={inputClass}
+                                    min="0"
+                                />
+                            </div>
+                            <div className={inputWrapperClass}>
+                                <label className={labelClass}>Bathrooms</label>
+                                <input
+                                    type="number"
+                                    name="bathrooms"
+                                    value={formData.bathrooms}
+                                    onChange={handleChange}
+                                    placeholder="e.g. 2"
+                                    className={inputClass}
+                                    min="0"
+                                />
+                            </div>
+                            <div className={inputWrapperClass}>
+                                <label className={labelClass}>Area (Sq Ft)</label>
+                                <input
+                                    type="number"
+                                    name="area"
+                                    value={formData.area}
+                                    onChange={handleChange}
+                                    placeholder="e.g. 2500"
+                                    className={inputClass}
+                                    min="0"
+                                />
+                            </div>
+                        </div>
                     </div>
 
                     {/* SECTION 2: LOCATION & DETAILS */}
@@ -384,8 +429,8 @@ const AddProperty = () => {
                         </button>
                     </div>
                 </form>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 };
 
