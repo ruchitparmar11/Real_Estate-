@@ -12,7 +12,12 @@ router.get('/', auth, async (req, res) => {
             return res.send({ views: 0, inquiries: 0, conversion_rate: 0 });
         }
 
-        const properties = await Property.find({ agent_id: req.user._id });
+        let properties;
+        if (req.user.role === 'admin') {
+            properties = await Property.find({});
+        } else {
+            properties = await Property.find({ agent_id: req.user._id });
+        }
         const propertyIds = properties.map(p => p._id);
 
         let views = 0;

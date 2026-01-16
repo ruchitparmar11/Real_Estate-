@@ -45,10 +45,10 @@ const Analytics = () => {
                     <div style={{ color: '#22c55e', fontSize: '0.875rem' }}>Lifetime views</div>
                 </div>
 
-                {stats.total_fees !== undefined && stats.total_fees > 0 && (
+                {stats.total_fees !== undefined && (
                     <div className="card">
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                            <span style={{ color: 'var(--text-muted)' }}>Platform Revenue</span>
+                            <span style={{ color: 'var(--text-muted)' }}>Platform Fees</span>
                             <DollarSign style={{ color: '#fbbf24' }} />
                         </div>
                         <div style={{ fontSize: '2rem', fontWeight: 'bold' }}>₹{stats.total_fees.toLocaleString()}</div>
