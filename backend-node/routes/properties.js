@@ -206,11 +206,14 @@ router.post('/:id/buy', auth, async (req, res) => {
             return res.status(400).send({ detail: 'Property is already sold' });
         }
 
+        const platformFee = property.price * 0.01; // 1% Fee
+
         const transaction = new Transaction({
             property_id: property._id,
             buyer_id: req.user._id,
             seller_id: property.agent_id,
             amount: property.price,
+            platform_fee: platformFee,
             status: 'completed'
         });
 

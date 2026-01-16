@@ -5,6 +5,7 @@ const transactionSchema = new mongoose.Schema({
     buyer_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     seller_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     amount: { type: Number, required: true },
+    platform_fee: { type: Number, default: 0 },
     status: { type: String, default: 'completed' },
     transaction_date: { type: Date, default: Date.now }
 });

@@ -33,11 +33,20 @@ router.get('/', auth, async (req, res) => {
             conversion_rate = (total_bookings / total_views) * 100;
         }
 
+        // 0. Platform Fees (Admin Only)
+        let total_fees = 0;
+        if (req.user.role === 'admin') {
+            // For admin, calculate TOTAL platform fees from ALL transactions ever
+            const allTransactions = await Transaction.find({});
+            total_fees = allTransactions.reduce((acc, t) => acc + (t.platform_fee || 0), 0);
+        }
+
         res.send({
             views: total_views,
             inquiries: total_inquiries,
             applications: total_bookings,
-            conversion_rate: Number(conversion_rate.toFixed(1))
+            conversion_rate: Number(conversion_rate.toFixed(1)),
+            total_fees // Send this back
         });
 
     } catch (e) {

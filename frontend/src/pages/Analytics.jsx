@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
-import { BarChart, TrendingUp, Users, Eye } from 'lucide-react';
+import { BarChart, TrendingUp, Users, Eye, DollarSign } from 'lucide-react';
 
 const Analytics = () => {
     const [stats, setStats] = useState({
@@ -44,6 +44,17 @@ const Analytics = () => {
                     <div style={{ fontSize: '2rem', fontWeight: 'bold' }}>{stats.views}</div>
                     <div style={{ color: '#22c55e', fontSize: '0.875rem' }}>Lifetime views</div>
                 </div>
+
+                {stats.total_fees !== undefined && (
+                    <div className="card">
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                            <span style={{ color: 'var(--text-muted)' }}>Platform Revenue</span>
+                            <DollarSign style={{ color: '#fbbf24' }} />
+                        </div>
+                        <div style={{ fontSize: '2rem', fontWeight: 'bold' }}>₹{stats.total_fees.toLocaleString()}</div>
+                        <div style={{ color: '#fbbf24', fontSize: '0.875rem' }}>Total Fees Collection</div>
+                    </div>
+                )}
                 <div className="card">
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
                         <span style={{ color: 'var(--text-muted)' }}>Inquiries</span>
