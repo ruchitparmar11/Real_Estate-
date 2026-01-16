@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Upload, DollarSign, MapPin, Layout, FileText, Home, ArrowLeft } from 'lucide-react';
 
@@ -25,7 +25,7 @@ const AddProperty = () => {
         if (isEditMode) {
             const fetchProperty = async () => {
                 try {
-                    const response = await axios.get(`http://localhost:8000/properties/${id}`);
+                    const response = await api.get(`/properties/${id}`);
                     const prop = response.data;
                     setFormData({
                         title: prop.title,
@@ -75,11 +75,8 @@ const AddProperty = () => {
                 const uploadData = new FormData();
                 uploadData.append('image', formData.file);
 
-                const uploadRes = await axios.post('http://localhost:8000/properties/upload', uploadData, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'multipart/form-data'
-                    }
+                const uploadRes = await api.post('/properties/upload', uploadData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
                 });
                 finalImageUrl = uploadRes.data.url;
             }
@@ -105,14 +102,10 @@ const AddProperty = () => {
 
             if (isEditMode) {
                 // Update
-                await axios.put(`http://localhost:8000/properties/${id}`, propertyData, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                await api.put(`/properties/${id}`, propertyData);
             } else {
                 // Create
-                const response = await axios.post('http://localhost:8000/properties/', propertyData, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                const response = await api.post('/properties/', propertyData);
                 propertyId = response.data.id;
             }
 
@@ -127,10 +120,8 @@ const AddProperty = () => {
                 // For MVP simplicity: just send it. properties/:id/images appends it.
 
                 // Only send if it's not the initial placeholder
-                await axios.post(`http://localhost:8000/properties/${propertyId}/images`, {
+                await api.post(`/properties/${propertyId}/images`, {
                     image_url: finalImageUrl
-                }, {
-                    headers: { Authorization: `Bearer ${token}` }
                 });
             }
 

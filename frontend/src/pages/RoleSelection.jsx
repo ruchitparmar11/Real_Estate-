@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../services/api';
 import { User, Shield, Briefcase, Key } from 'lucide-react';
 
 const RoleSelection = () => {
@@ -20,10 +20,7 @@ const RoleSelection = () => {
         try {
             const token = localStorage.getItem('token');
             // Update role
-            await axios.put('http://localhost:8000/auth/role',
-                { role },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
+            await api.put('/auth/role', { role });
 
             // If phone provided, update it (we need a new endpoint or update the same one if backend supports it)
             // For simplicity, let's assume the /auth/role endpoint or a new /auth/profile endpoint handles it.
@@ -31,10 +28,7 @@ const RoleSelection = () => {
             // Let's assume we will update the backend to accept phone in the same request or a separate one.
 
             if (phone) {
-                await axios.put('http://localhost:8000/auth/profile',
-                    { phone },
-                    { headers: { Authorization: `Bearer ${token}` } }
-                );
+                await api.put('/auth/profile', { phone });
             }
 
             localStorage.setItem('role', role);

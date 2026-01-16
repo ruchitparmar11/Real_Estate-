@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import { User, Mail, Phone, Shield, LogOut, LayoutDashboard, Heart, MessageSquare, BarChart2, PlusCircle, FileText, Home, ShoppingBag, DollarSign, BadgeCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -18,9 +18,7 @@ const Profile = () => {
                     return;
                 }
 
-                const response = await axios.get('http://localhost:8000/auth/me', {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                const response = await api.get('/auth/me');
                 setUser(response.data);
             } catch (err) {
                 console.error(err);
@@ -262,9 +260,7 @@ const Profile = () => {
                                     onClick={async () => {
                                         try {
                                             const token = localStorage.getItem('token');
-                                            await axios.post('http://localhost:8000/auth/request-verification', {}, {
-                                                headers: { Authorization: `Bearer ${token}` }
-                                            });
+                                            await api.post('/auth/request-verification');
                                             setUser(prev => ({ ...prev, verificationStatus: 'pending' }));
                                             alert('Verification requested successfully!');
                                         } catch (e) {
