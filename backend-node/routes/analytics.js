@@ -35,27 +35,23 @@ router.get('/', auth, async (req, res) => {
             }
         }
 
-        // Admin Specific Data
-        let total_fees = 0;
-        let users = [];
-
-        if (req.user.role === 'admin') {
-            // For admin, calculate TOTAL platform fees from ALL transactions ever
-            const allTransactions = await Transaction.find({});
-            total_fees = allTransactions.reduce((acc, t) => acc + (t.platform_fee || 0), 0);
-
-            // Fetch all registered users
-            users = await User.find({}, '-password_hash');
-        }
-
-        res.send({
+        const responseData = {
             views,
             inquiries,
             applications: bookings,
-            conversion_rate: Number(conversion_rate.toFixed(1)),
-            total_fees,
-            users
-        });
+            conversion_rate: Number(conversion_rate.toFixed(1))
+        };
+
+        if (req.user.role === 'admin') {
+            const allTransactions = await Transaction.find({});
+            const total_fees = allTransactions.reduce((acc, t) => acc + (t.platform_fee || 0), 0);
+            const users = await User.find({}, '-password_hash');
+
+            responseData.total_fees = total_fees;
+            responseData.users = users;
+        }
+
+        res.send(responseData);
 
     } catch (e) {
         res.status(500).send({ detail: e.message });
