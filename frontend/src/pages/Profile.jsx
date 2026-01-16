@@ -147,6 +147,30 @@ const Profile = () => {
                         </>
                     )}
 
+                    {user.role === 'admin' && (
+                        <>
+                            <DashboardCard
+                                title="Platform Analytics"
+                                description="View system-wide performance and revenue."
+                                icon={BarChart2}
+                                onClick={() => navigate('/analytics')}
+                                primary
+                            />
+                            <DashboardCard
+                                title="Manage Properties"
+                                description="Review and approve listings."
+                                icon={Home}
+                                onClick={() => navigate('/properties')}
+                            />
+                            <DashboardCard
+                                title="My Purchases"
+                                description="Test purchase flow."
+                                icon={ShoppingBag}
+                                onClick={() => navigate('/my-purchases')}
+                            />
+                        </>
+                    )}
+
                     {user.role === 'tenant' && (
                         <>
                             <DashboardCard
