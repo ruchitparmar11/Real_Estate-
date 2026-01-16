@@ -7,33 +7,27 @@ const Property = require('../models/Property');
 const Transaction = require('../models/Transaction');
 const auth = require('../middleware/auth');
 
-// Configure Multer for local storage
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        const uploadDir = path.join(__dirname, '../uploads/');
-        if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
-        }
-        cb(null, uploadDir);
-    },
-    filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, 'property-' + uniqueSuffix + path.extname(file.originalname));
-    }
+// Configure Multer for MEMORY storage (Base64)
+const storage = multer.memoryStorage();
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 5 * 1024 * 1024 } // Limit to 5MB to prevent DB bloat
 });
 
-const upload = multer({ storage: storage });
-
-// POST /upload - Upload Image
+// POST /upload - Upload Image (Base64)
 router.post('/upload', auth, upload.single('image'), (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).send({ detail: 'No file uploaded' });
         }
-        // Return the URL to the uploaded file
-        // construction info: Protocol + Host + /uploads/ + filename
-        const fullUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
-        res.send({ url: fullUrl });
+
+        // Convert buffer to Base64
+        const b64 = Buffer.from(req.file.buffer).toString('base64');
+        const mimeType = req.file.mimetype;
+        const dataURI = `data:${mimeType};base64,${b64}`;
+
+        // Return the Data URI as the URL
+        res.send({ url: dataURI });
     } catch (e) {
         res.status(400).send({ detail: e.message });
     }
