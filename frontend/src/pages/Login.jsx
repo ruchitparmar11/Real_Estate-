@@ -54,9 +54,15 @@ const Login = () => {
                 password: formData.password
             });
             localStorage.setItem('token', response.data.access_token);
-            localStorage.setItem('role', response.data.user.role);
+            const role = response.data.user.role;
+            localStorage.setItem('role', role);
+
+            alert(`Logged in as: ${role.toUpperCase()}`); // DEBUG ALERT
+
             window.dispatchEvent(new Event('storage'));
-            navigate('/');
+
+            if (role === 'admin') navigate('/profile'); // Send admin to profile directly
+            else navigate('/');
         } catch (err) {
             setError(err.response?.status === 401 ? 'Invalid email or password' : 'Login failed. Please try again.');
         } finally {
