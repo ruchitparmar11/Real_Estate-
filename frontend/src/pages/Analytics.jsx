@@ -85,6 +85,53 @@ const Analytics = () => {
                 <BarChart size={64} style={{ opacity: 0.2, marginRight: '1rem' }} />
                 <span>Detailed charts coming soon...</span>
             </div>
+
+            {/* Users List for Admin */}
+            {stats.users && stats.users.length > 0 && (
+                <div className="mt-8">
+                    <h2 className="text-2xl font-bold mb-4">Platform Users</h2>
+                    <div className="glass-panel rounded-2xl overflow-hidden border border-white/5">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left border-collapse">
+                                <thead>
+                                    <tr className="bg-white/5 border-b border-white/10 text-text-muted text-sm uppercase">
+                                        <th className="p-4 font-semibold">Name</th>
+                                        <th className="p-4 font-semibold">Email</th>
+                                        <th className="p-4 font-semibold">Role</th>
+                                        <th className="p-4 font-semibold">Verified</th>
+                                        <th className="p-4 font-semibold">Phone</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-white/5">
+                                    {stats.users.map(user => (
+                                        <tr key={user._id} className="hover:bg-white/5 transition-colors">
+                                            <td className="p-4 font-medium text-white">{user.name}</td>
+                                            <td className="p-4 text-text-muted">{user.email}</td>
+                                            <td className="p-4">
+                                                <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${user.role === 'admin' ? 'bg-red-500/20 text-red-400' :
+                                                        user.role === 'seller' ? 'bg-blue-500/20 text-blue-400' :
+                                                            user.role === 'agent' ? 'bg-purple-500/20 text-purple-400' :
+                                                                'bg-green-500/20 text-green-400'
+                                                    }`}>
+                                                    {user.role}
+                                                </span>
+                                            </td>
+                                            <td className="p-4">
+                                                {user.isVerified ? (
+                                                    <span className="text-green-400 text-xs font-bold">Verified</span>
+                                                ) : (
+                                                    <span className="text-text-muted text-xs">Unverified</span>
+                                                )}
+                                            </td>
+                                            <td className="p-4 text-text-muted text-sm">{user.phone || '-'}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -3,6 +3,7 @@ const router = express.Router();
 const Property = require('../models/Property');
 const Inquiry = require('../models/Inquiry');
 const Booking = require('../models/Booking');
+const User = require('../models/User');
 const auth = require('../middleware/auth');
 
 router.get('/', auth, async (req, res) => {
@@ -14,39 +15,41 @@ router.get('/', auth, async (req, res) => {
         const properties = await Property.find({ agent_id: req.user._id });
         const propertyIds = properties.map(p => p._id);
 
-        if (propertyIds.length === 0) {
-            return res.send({ views: 0, inquiries: 0, conversion_rate: 0 });
-        }
-
-        // 1. Total Views
-        const total_views = properties.reduce((acc, p) => acc + p.views, 0);
-
-        // 2. Total Inquiries
-        const total_inquiries = await Inquiry.countDocuments({ property_id: { $in: propertyIds } });
-
-        // 3. Applications / Bookings
-        const total_bookings = await Booking.countDocuments({ property_id: { $in: propertyIds } });
-
-        // Conversion Rate
+        let views = 0;
+        let inquiries = 0;
+        let bookings = 0;
         let conversion_rate = 0;
-        if (total_views > 0) {
-            conversion_rate = (total_bookings / total_views) * 100;
+
+        if (propertyIds.length > 0) {
+            views = properties.reduce((acc, p) => acc + p.views, 0);
+            inquiries = await Inquiry.countDocuments({ property_id: { $in: propertyIds } });
+            bookings = await Booking.countDocuments({ property_id: { $in: propertyIds } });
+
+            if (views > 0) {
+                conversion_rate = (bookings / views) * 100;
+            }
         }
 
-        // 0. Platform Fees (Admin Only)
+        // Admin Specific Data
         let total_fees = 0;
+        let users = [];
+
         if (req.user.role === 'admin') {
             // For admin, calculate TOTAL platform fees from ALL transactions ever
             const allTransactions = await Transaction.find({});
             total_fees = allTransactions.reduce((acc, t) => acc + (t.platform_fee || 0), 0);
+
+            // Fetch all registered users
+            users = await User.find({}, '-password_hash');
         }
 
         res.send({
-            views: total_views,
-            inquiries: total_inquiries,
-            applications: total_bookings,
+            views,
+            inquiries,
+            applications: bookings,
             conversion_rate: Number(conversion_rate.toFixed(1)),
-            total_fees // Send this back
+            total_fees,
+            users
         });
 
     } catch (e) {
