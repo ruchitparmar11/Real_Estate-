@@ -5,6 +5,45 @@ const Inquiry = require('../models/Inquiry');
 const Booking = require('../models/Booking');
 const User = require('../models/User');
 const auth = require('../middleware/auth');
+const Transaction = require('../models/Transaction');
+
+router.get('/users/:id/details', auth, async (req, res) => {
+    try {
+        if (req.user.role !== 'admin') {
+            return res.status(403).send({ detail: 'Not authorized' });
+        }
+
+        const user = await User.findById(req.params.id, '-password_hash');
+        if (!user) {
+            return res.status(404).send({ detail: 'User not found' });
+        }
+
+        const purchases = await Transaction.find({ buyer_id: req.params.id })
+            .populate('property_id', 'title location images')
+            .sort({ transaction_date: -1 });
+
+        const sales = await Transaction.find({ seller_id: req.params.id })
+            .populate('property_id', 'title location images')
+            .sort({ transaction_date: -1 });
+
+
+
+        const listings = await Property.find({ agent_id: req.params.id })
+            .select('title location price images status')
+            .sort({ created_at: -1 });
+
+        res.send({
+            user,
+            purchases,
+            sales,
+            listings,
+            property_count: listings.length
+        });
+
+    } catch (e) {
+        res.status(500).send({ detail: e.message });
+    }
+});
 
 router.get('/', auth, async (req, res) => {
     try {
@@ -43,9 +82,16 @@ router.get('/', auth, async (req, res) => {
         };
 
         if (req.user.role === 'admin') {
-            const allTransactions = await Transaction.find({});
-            const total_fees = allTransactions.reduce((acc, t) => acc + (t.platform_fee || 0), 0);
-            const users = await User.find({}, '-password_hash');
+            // Use aggregation to calculate total fees efficiently in the DB
+            const feesAggregation = await Transaction.aggregate([
+                { $group: { _id: null, total: { $sum: "$platform_fee" } } }
+            ]);
+            const total_fees = feesAggregation.length > 0 ? feesAggregation[0].total : 0;
+
+            // Limit users to the most recent 50 to avoid slow responses
+            const users = await User.find({}, '-password_hash')
+                .sort({ created_at: -1 })
+                .limit(50);
 
             responseData.total_fees = total_fees;
             responseData.users = users;
@@ -58,7 +104,7 @@ router.get('/', auth, async (req, res) => {
     }
 });
 
-const Transaction = require('../models/Transaction');
+// Transaction model moved to top
 
 // ... existing code ...
 
@@ -85,5 +131,7 @@ router.get('/sales', auth, async (req, res) => {
         res.status(500).send({ detail: e.message });
     }
 });
+
+
 
 module.exports = router;

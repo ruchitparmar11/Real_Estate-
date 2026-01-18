@@ -12,7 +12,10 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 const path = require('path');
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
+    maxAge: '1d', // Cache images for 1 day
+    etag: true
+}));
 
 // Database
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/realestate';
@@ -38,4 +41,5 @@ app.get('/', (req, res) => {
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+    console.log('Server successfully restarted with latest updates (4).');
 });

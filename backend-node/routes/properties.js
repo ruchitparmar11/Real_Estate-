@@ -7,27 +7,47 @@ const Property = require('../models/Property');
 const Transaction = require('../models/Transaction');
 const auth = require('../middleware/auth');
 
-// Configure Multer for MEMORY storage (Base64)
-const storage = multer.memoryStorage();
-const upload = multer({
-    storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024 } // Limit to 5MB to prevent DB bloat
+// Configure Multer for DISK storage
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const uploadDir = 'uploads/';
+        // Ensure directory exists
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir);
+        }
+        cb(null, uploadDir);
+    },
+    filename: (req, file, cb) => {
+        // Generate unique filename: timestamp-random.ext
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, uniqueSuffix + path.extname(file.originalname));
+    }
 });
 
-// POST /upload - Upload Image (Base64)
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 5 * 1024 * 1024 } // 5MB
+});
+
+// POST /upload - Upload Image (Disk)
 router.post('/upload', auth, upload.single('image'), (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).send({ detail: 'No file uploaded' });
         }
 
-        // Convert buffer to Base64
-        const b64 = Buffer.from(req.file.buffer).toString('base64');
-        const mimeType = req.file.mimetype;
-        const dataURI = `data:${mimeType};base64,${b64}`;
+        // Return the relative URL
+        // req.protocol + '://' + req.get('host') could be used for absolute URL, 
+        // but relative is often safer for proxies unless frontend needs absolute.
+        // Let's return full URL to be safe with how frontend renders it.
+        const port = process.env.PORT || 8000;
+        const protocol = req.protocol;
+        const host = req.get('host');
 
-        // Return the Data URI as the URL
-        res.send({ url: dataURI });
+        // Construct URL. Note: we serve 'uploads' as static at root '/uploads'.
+        const fileUrl = `${protocol}://${host}/uploads/${req.file.filename}`;
+
+        res.send({ url: fileUrl });
     } catch (e) {
         res.status(400).send({ detail: e.message });
     }
@@ -59,7 +79,8 @@ router.get('/', async (req, res) => {
         const properties = await Property.find(query)
             .sort({ isFeatured: -1, created_at: -1 })
             .limit(Number(limit))
-            .skip(Number(skip));
+            .skip(Number(skip))
+            .select({ images: { $slice: 1 } }); // Optimization: Fetch only 1st image for list view
         res.send(properties);
     } catch (e) {
         res.status(500).send({ detail: e.message });
@@ -71,7 +92,7 @@ router.get('/purchased', auth, async (req, res) => {
     try {
         const transactions = await Transaction.find({ buyer_id: req.user._id });
         const propertyIds = transactions.map(t => t.property_id);
-        const properties = await Property.find({ _id: { $in: propertyIds } });
+        const properties = await Property.find({ _id: { $in: propertyIds } }).select({ images: { $slice: 1 } });
         res.send(properties);
     } catch (e) {
         res.status(500).send({ detail: e.message });
